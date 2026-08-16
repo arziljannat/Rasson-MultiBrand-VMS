@@ -281,7 +281,9 @@ async function testDeviceConnection() {
 
     if (!device.name) {
 
-        alert("Device name required");
+        alert(
+            "Device name required"
+        );
 
         return;
 
@@ -294,7 +296,7 @@ async function testDeviceConnection() {
     ) {
 
         alert(
-            "Enter Serial Number / Device ID or IP Address"
+            "Serial Number / Device ID or IP Address is required"
         );
 
         return;
@@ -304,15 +306,9 @@ async function testDeviceConnection() {
 
     try {
 
-        /*
-         * For testing a device before saving,
-         * we first save it temporarily through
-         * the existing API.
-         */
-
-        const addResponse =
+        const response =
             await fetch(
-                "/api/devices",
+                "/api/devices/test",
                 {
                     method: "POST",
 
@@ -327,47 +323,30 @@ async function testDeviceConnection() {
             );
 
 
-        const addResult =
-            await addResponse.json();
+        const result =
+            await response.json();
+
+
+        console.log(
+            "Device test result:",
+            result
+        );
 
 
         if (
-            !addResult.success ||
-            !addResult.device
+            result.status ===
+            "NAT2_READY"
         ) {
 
             alert(
-                addResult.error ||
-                "Unable to create test device"
-            );
-
-            return;
-
-        }
-
-
-        const deviceId =
-            addResult.device.id;
-
-
-        const testResponse =
-            await fetch(
-                `/api/devices/${deviceId}/test`,
-                {
-                    method: "POST"
-                }
-            );
-
-
-        const result =
-            await testResponse.json();
-
-
-        if (result.status === "NAT2_READY") {
-
-            alert(
-                "NAT2.0 device configuration is valid.\n\n" +
-                "Actual P2P video connection will be added in the next stage."
+                "NAT2.0 device detected.\n\n" +
+                "Serial: " +
+                (
+                    result.device?.serial ||
+                    device.serial
+                ) +
+                "\n\n" +
+                "P2P transport is the next step."
             );
 
             return;
@@ -379,7 +358,7 @@ async function testDeviceConnection() {
 
             alert(
                 result.message ||
-                "Connection successful"
+                "Device connection successful."
             );
 
             return;
@@ -390,7 +369,7 @@ async function testDeviceConnection() {
         alert(
             result.message ||
             result.error ||
-            "Connection failed"
+            "Device connection failed."
         );
 
 
@@ -402,13 +381,12 @@ async function testDeviceConnection() {
         );
 
         alert(
-            "Server connection failed"
+            "Server connection failed."
         );
 
     }
 
 }
-
 
 // ========================================
 // SAVE DEVICE
