@@ -1,4 +1,3 @@
-
 const express = require("express");
 
 const router = express.Router();
@@ -12,12 +11,12 @@ const tvtService =
 
 // GET ALL DEVICES
 
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
 
     try {
 
         const devices =
-            deviceService.getAllDevices();
+            await deviceService.getAllDevices();
 
         res.json(devices);
 
@@ -37,12 +36,12 @@ router.get("/", (req, res) => {
 
 // GET DEVICE BY ID
 
-router.get("/:id", (req, res) => {
+router.get("/:id", async (req, res) => {
 
     try {
 
         const device =
-            deviceService.getDeviceById(
+            await deviceService.getDeviceById(
                 req.params.id
             );
 
@@ -90,7 +89,6 @@ router.post("/test", async (req, res) => {
 
         }
 
-
         if (!device.name) {
 
             return res.status(400).json({
@@ -100,12 +98,10 @@ router.post("/test", async (req, res) => {
 
         }
 
-
         const result =
             await tvtService.testDevice(
                 device
             );
-
 
         res.json(result);
 
@@ -130,7 +126,7 @@ router.post("/test", async (req, res) => {
 
 // ADD DEVICE
 
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
 
     try {
 
@@ -147,7 +143,7 @@ router.post("/", (req, res) => {
         }
 
         const newDevice =
-            deviceService.addDevice(
+            await deviceService.addDevice(
                 device
             );
 
@@ -162,7 +158,9 @@ router.post("/", (req, res) => {
 
         res.status(500).json({
             success: false,
-            error: "Failed to add device"
+            error:
+                error.message ||
+                "Failed to add device"
         });
 
     }
@@ -172,11 +170,11 @@ router.post("/", (req, res) => {
 
 // DELETE DEVICE
 
-router.delete("/:id", (req, res) => {
+router.delete("/:id", async (req, res) => {
 
     try {
 
-        deviceService.deleteDevice(
+        await deviceService.deleteDevice(
             req.params.id
         );
 
@@ -190,7 +188,9 @@ router.delete("/:id", (req, res) => {
 
         res.status(500).json({
             success: false,
-            error: "Failed to delete device"
+            error:
+                error.message ||
+                "Failed to delete device"
         });
 
     }
