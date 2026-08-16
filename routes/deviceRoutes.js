@@ -71,40 +71,56 @@ router.get("/:id", (req, res) => {
 });
 
 
-// TEST TVT DEVICE CONNECTION
+// ========================================
+// TEST DEVICE BEFORE SAVING
+// ========================================
 
-router.post("/:id/test", async (req, res) => {
+router.post("/test", async (req, res) => {
 
     try {
 
-        const device =
-            deviceService.getDeviceById(
-                req.params.id
-            );
+        const device = req.body;
 
         if (!device) {
 
-            return res.status(404).json({
+            return res.status(400).json({
                 success: false,
-                error: "Device not found"
+                error: "Device data is required"
             });
 
         }
+
+
+        if (!device.name) {
+
+            return res.status(400).json({
+                success: false,
+                error: "Device name is required"
+            });
+
+        }
+
 
         const result =
             await tvtService.testDevice(
                 device
             );
 
+
         res.json(result);
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "TVT test error:",
+            error
+        );
 
         res.status(500).json({
             success: false,
-            error: "Failed to test TVT device"
+            error:
+                error.message ||
+                "Failed to test device"
         });
 
     }
