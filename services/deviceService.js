@@ -1,156 +1,108 @@
-const fs = require("fs");
-const path = require("path");
+const supabase = require("./supabaseClient");
 
-const DEVICES_FILE = path.join(
-    __dirname,
-    "..",
-    "config",
-    "devices.json"
-);
+function ensureSupabaseConfigured() {
+    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+        throw new Error(
+            "Supabase is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY."
+        );
+    }
+}
 
-function ensureDevicesFile() {
+function mapDevice(row) {
+    return {
+        name: row.name,
+        brand: row.brand,
+        type: row.type,
+        connectionType: row.connection_type,
+        serial: row.serial || "",
+        ip: row.ip || "",
+        port: row.port || "",
+        username: row.username || "",
+        password: row.password || "",
+        channels: Number(row.channels || 0),
+        id: row.id,
+        createdAt: row.created_at
+    };
+}
 
-    const folder = path.dirname(DEVICES_FILE);
+async function getAllDevices() {
+    ensureSupabaseConfigured();
 
-    if (!fs.existsSync(folder)) {
-        fs.mkdirSync(folder, {
-            recursive: true
-        });
+    const { data, error } = await supabase
+        .from("devices")
+        .select("*")
+        .order("created_at", { ascending: true });
+
+    if (error) {
+        throw error;
     }
 
-    if (!fs.existsSync(DEVICES_FILE)) {
+    return (data || []).map(mapDevice);
+}
 
-        fs.writeFileSync(
-            DEVICES_FILE,
-            JSON.stringify({
-                devices: []
-            }, null, 2),
-            "utf8"
-        );
+async function getDeviceById(id) {
+    ensureSupabaseConfigured();
 
+    const { data, error } = await supabase
+        .from("devices")
+        .select("*")
+        .eq("id", id)
+        .maybeSingle();
+
+    if (error) {
+        throw error;
     }
 
+    return data ? mapDevice(data) : null;
 }
 
+async function addDevice(device) {
+    ensureSupabaseConfigured();
 
-function loadDevices() {
-
-    ensureDevicesFile();
-
-    try {
-
-        const data = fs.readFileSync(
-            DEVICES_FILE,
-            "utf8"
-        );
-
-        const parsed = JSON.parse(data);
-
-        if (!Array.isArray(parsed.devices)) {
-            parsed.devices = [];
-        }
-
-        return parsed.devices;
-
-    } catch (error) {
-
-        console.error(
-            "Device load error:",
-            error
-        );
-
-        return [];
-
-    }
-
-}
-
-
-function saveDevices(devices) {
-
-    ensureDevicesFile();
-
-    fs.writeFileSync(
-        DEVICES_FILE,
-        JSON.stringify({
-            devices
-        }, null, 2),
-        "utf8"
-    );
-
-}
-
-
-function getAllDevices() {
-
-    return loadDevices();
-
-}
-
-
-function getDeviceById(id) {
-
-    const devices = loadDevices();
-
-    return devices.find(
-        device =>
-            String(device.id) === String(id)
-    );
-
-}
-
-
-function addDevice(device) {
-
-    const devices = loadDevices();
-
-    const newDevice = {
-
-        ...device,
-
-        id: Date.now().toString(),
-
-        createdAt:
-            new Date().toISOString()
-
+    const payload = {
+        name: device.name,
+        brand: device.brand || "generic",
+        type: device.type || "dvr",
+        connection_type: device.connectionType || "IP",
+        serial: device.serial || "",
+        ip: device.ip || "",
+        port: device.port || "",
+        username: device.username || "",
+        password: device.password || "",
+        channels: Number(device.channels || 0)
     };
 
-    devices.push(newDevice);
+    const { data, error } = await supabase
+        .from("devices")
+        .insert(payload)
+        .select("*")
+        .single();
 
-    saveDevices(devices);
+    if (error) {
+        throw error;
+    }
 
-    return newDevice;
-
+    return mapDevice(data);
 }
 
+async function deleteDevice(id) {
+    ensureSupabaseConfigured();
 
-function deleteDevice(id) {
+    const { error } = await supabase
+        .from("devices")
+        .delete()
+        .eq("id", id);
 
-    const devices = loadDevices();
-
-    const filtered =
-        devices.filter(
-            device =>
-                String(device.id) !== String(id)
-        );
-
-    saveDevices(filtered);
+    if (error) {
+        throw error;
+    }
 
     return true;
-
 }
 
-
 module.exports = {
-
     getAllDevices,
-
     getDeviceById,
-
     addDevice,
-
-    deleteDevice,
-
-    saveDevices
-
+    deleteDevice
 };
