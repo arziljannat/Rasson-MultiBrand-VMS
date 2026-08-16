@@ -1,13 +1,12 @@
 {
   "name": "rasson-multibrand-vms",
   "version": "1.0.0",
-  "description": "Multi-brand DVR and NVR video management system",
+  "description": "Multi-brand DVR VMS",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
+    "start": "node server.js"
   },
   "dependencies": {
-    "express": "^5.1.0"
+    "express": "^4.21.2"
   }
 }
