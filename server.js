@@ -8,7 +8,6 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
-
 // --------------------------------------------------
 // MIDDLEWARE
 // --------------------------------------------------
@@ -19,7 +18,6 @@ app.use(express.urlencoded({
     extended: true
 }));
 
-
 // --------------------------------------------------
 // STATIC FRONTEND
 // --------------------------------------------------
@@ -29,7 +27,6 @@ app.use(
         path.join(__dirname, "public")
     )
 );
-
 
 // --------------------------------------------------
 // API ROUTES
@@ -45,37 +42,24 @@ app.use(
     streamRoutes
 );
 
-
 // --------------------------------------------------
 // HEALTH CHECK
 // --------------------------------------------------
 
 app.get("/api/health", (req, res) => {
-
     res.json({
-
         success: true,
-
-        name:
-            "Rasson MultiBrand VMS",
-
-        status:
-            "online",
-
-        time:
-            new Date().toISOString()
-
+        name: "Rasson MultiBrand VMS",
+        status: "online",
+        time: new Date().toISOString()
     });
-
 });
-
 
 // --------------------------------------------------
 // FRONTEND FALLBACK
 // --------------------------------------------------
 
 app.get("*", (req, res) => {
-
     res.sendFile(
         path.join(
             __dirname,
@@ -83,48 +67,35 @@ app.get("*", (req, res) => {
             "index.html"
         )
     );
-
 });
-
 
 // --------------------------------------------------
 // ERROR HANDLER
 // --------------------------------------------------
 
 app.use((err, req, res, next) => {
-
-    console.error(
-        "Server Error:",
-        err
-    );
+    console.error("Server Error:", err);
 
     res.status(500).json({
-
         success: false,
-
-        error:
-            "Internal server error"
-
+        error: err.message || "Internal server error"
     });
-
 });
 
-
 // --------------------------------------------------
-// START SERVER
+// VERCEL / LOCAL EXPORT
 // --------------------------------------------------
 
-app.listen(
-    PORT,
-    () => {
+module.exports = app;
 
+// Start a normal HTTP server only when running locally.
+if (require.main === module) {
+    app.listen(PORT, () => {
         console.log(
             `Rasson MultiBrand VMS running on port ${PORT}`
         );
-
         console.log(
             `http://localhost:${PORT}`
         );
-
-    }
-);
+    });
+}
