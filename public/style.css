@@ -1,0 +1,519 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+
+    margin: 0;
+
+    background: #0b0e13;
+
+    color: #ffffff;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+}
+
+
+/* ================================= */
+/* TOP BAR */
+/* ================================= */
+
+.topbar {
+
+    height: 70px;
+
+    background: #11161e;
+
+    border-bottom:
+        1px solid #27303d;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 0 22px;
+
+}
+
+
+.logo {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+}
+
+
+.logo-icon {
+
+    width: 42px;
+
+    height: 42px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #00bcd4;
+
+    color: #071016;
+
+    font-size: 25px;
+
+}
+
+
+.logo-title {
+
+    font-size: 20px;
+
+    font-weight: bold;
+
+    letter-spacing: 2px;
+
+}
+
+
+.logo-subtitle {
+
+    color: #77808d;
+
+    font-size: 10px;
+
+    letter-spacing: 2px;
+
+}
+
+
+.add-button {
+
+    background: #00bcd4;
+
+    color: #001014;
+
+    border: none;
+
+    padding: 11px 18px;
+
+    border-radius: 6px;
+
+    cursor: pointer;
+
+    font-weight: bold;
+
+}
+
+
+/* ================================= */
+/* MAIN */
+/* ================================= */
+
+.main-container {
+
+    display: flex;
+
+    height:
+        calc(100vh - 70px);
+
+}
+
+
+/* ================================= */
+/* SIDEBAR */
+/* ================================= */
+
+.sidebar {
+
+    width: 250px;
+
+    background: #10151c;
+
+    border-right:
+        1px solid #27303d;
+
+    padding: 20px;
+
+    overflow-y: auto;
+
+}
+
+
+.sidebar-title {
+
+    color: #718090;
+
+    font-size: 12px;
+
+    letter-spacing: 2px;
+
+    margin-bottom: 15px;
+
+}
+
+
+.device-item {
+
+    padding: 12px;
+
+    background: #161c24;
+
+    border:
+        1px solid #252e3a;
+
+    border-radius: 6px;
+
+    margin-bottom: 8px;
+
+    cursor: pointer;
+
+}
+
+
+.device-item:hover {
+
+    border-color: #00bcd4;
+
+}
+
+
+.device-name {
+
+    font-weight: bold;
+
+}
+
+
+.device-brand {
+
+    color: #7e8a98;
+
+    font-size: 11px;
+
+    margin-top: 4px;
+
+}
+
+
+/* ================================= */
+/* CONTENT */
+/* ================================= */
+
+.content {
+
+    flex: 1;
+
+    padding: 20px;
+
+    overflow: auto;
+
+}
+
+
+.content-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 15px;
+
+}
+
+
+h1 {
+
+    margin: 0;
+
+    font-size: 22px;
+
+}
+
+
+.device-count {
+
+    color: #7d8997;
+
+    font-size: 12px;
+
+}
+
+
+.layout-buttons button {
+
+    background: #161c24;
+
+    border:
+        1px solid #303b48;
+
+    color: white;
+
+    padding: 8px 12px;
+
+    cursor: pointer;
+
+    border-radius: 5px;
+
+    margin-left: 5px;
+
+}
+
+
+/* ================================= */
+/* CAMERA GRID */
+/* ================================= */
+
+.camera-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 5px;
+
+}
+
+
+.camera {
+
+    aspect-ratio: 16 / 9;
+
+    background: #050608;
+
+    border:
+        1px solid #26303c;
+
+    position: relative;
+
+    overflow: hidden;
+
+}
+
+
+.camera-video {
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+
+}
+
+
+.camera-label {
+
+    position: absolute;
+
+    left: 8px;
+
+    bottom: 7px;
+
+    background: rgba(0,0,0,.65);
+
+    padding: 5px 8px;
+
+    font-size: 11px;
+
+}
+
+
+.camera-status {
+
+    position: absolute;
+
+    top: 7px;
+
+    right: 7px;
+
+    font-size: 10px;
+
+    color: #00e676;
+
+}
+
+
+.no-signal {
+
+    height: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    color: #56616f;
+
+    font-size: 13px;
+
+}
+
+
+/* ================================= */
+/* MODAL */
+/* ================================= */
+
+.modal {
+
+    position: fixed;
+
+    inset: 0;
+
+    background:
+        rgba(0,0,0,.75);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+
+.hidden {
+
+    display: none;
+
+}
+
+
+.modal-box {
+
+    width: 460px;
+
+    background: #151b23;
+
+    border:
+        1px solid #303a47;
+
+    border-radius: 10px;
+
+    padding: 22px;
+
+}
+
+
+.modal-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 20px;
+
+}
+
+
+.modal-header h2 {
+
+    margin: 0;
+
+}
+
+
+.modal-header button {
+
+    background: none;
+
+    border: none;
+
+    color: white;
+
+    font-size: 25px;
+
+    cursor: pointer;
+
+}
+
+
+label {
+
+    display: block;
+
+    color: #8d99a7;
+
+    font-size: 12px;
+
+    margin-top: 12px;
+
+    margin-bottom: 5px;
+
+}
+
+
+input,
+select {
+
+    width: 100%;
+
+    padding: 10px;
+
+    background: #0d1218;
+
+    border:
+        1px solid #303a47;
+
+    color: white;
+
+    border-radius: 5px;
+
+}
+
+
+.modal-actions {
+
+    margin-top: 22px;
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+
+}
+
+
+.modal-actions button {
+
+    padding: 10px 15px;
+
+    border-radius: 5px;
+
+    border:
+        1px solid #303a47;
+
+    background: #1c232d;
+
+    color: white;
+
+    cursor: pointer;
+
+}
+
+
+.save-button {
+
+    background: #00bcd4 !important;
+
+    color: #001014 !important;
+
+}
