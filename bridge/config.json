@@ -1,1 +1,23 @@
+{
+  "bridgeName": "Rasson3-Bridge",
 
+  "centralServer": "http://localhost:3000",
+
+  "pollInterval": 10000,
+
+  "devices": [
+    {
+      "id": "rasson3-hikvision",
+      "name": "Rasson 3 - Hikvision",
+      "brand": "Hikvision",
+
+      "host": "192.168.100.157",
+      "port": 554,
+
+      "username": "admin",
+      "password": "",
+
+      "channels": 16
+    }
+  ]
+}
