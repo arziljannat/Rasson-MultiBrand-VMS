@@ -1,0 +1,395 @@
+let devices = [];
+
+let currentLayout = 16;
+
+
+// ========================================
+// LOAD DEVICES
+// ========================================
+
+async function loadDevices() {
+
+    try {
+
+        const response =
+            await fetch("/api/devices");
+
+        devices =
+            await response.json();
+
+        renderDevices();
+
+        renderCameras();
+
+    } catch (error) {
+
+        console.error(
+            "Failed to load devices:",
+            error
+        );
+
+    }
+
+}
+
+
+// ========================================
+// RENDER DEVICE LIST
+// ========================================
+
+function renderDevices() {
+
+    const list =
+        document.getElementById(
+            "deviceList"
+        );
+
+    list.innerHTML = "";
+
+    document.getElementById(
+        "deviceCount"
+    ).textContent =
+        `${devices.length} Devices`;
+
+
+    devices.forEach(device => {
+
+        const item =
+            document.createElement("div");
+
+        item.className =
+            "device-item";
+
+
+        item.innerHTML = `
+
+            <div class="device-name">
+                ${escapeHtml(device.name)}
+            </div>
+
+            <div class="device-brand">
+                ${escapeHtml(device.brand)}
+            </div>
+
+        `;
+
+
+        list.appendChild(item);
+
+    });
+
+}
+
+
+// ========================================
+// RENDER CAMERA GRID
+// ========================================
+
+function renderCameras() {
+
+    const grid =
+        document.getElementById(
+            "cameraGrid"
+        );
+
+    grid.innerHTML = "";
+
+
+    const total =
+        Math.max(
+            currentLayout,
+            devices.length
+        );
+
+
+    for (
+        let i = 0;
+        i < total;
+        i++
+    ) {
+
+        const camera =
+            document.createElement("div");
+
+        camera.className =
+            "camera";
+
+
+        camera.innerHTML = `
+
+            <div class="no-signal">
+                No Signal
+            </div>
+
+            <div class="camera-label">
+                Camera ${i + 1}
+            </div>
+
+            <div class="camera-status">
+                ●
+            </div>
+
+        `;
+
+
+        grid.appendChild(camera);
+
+    }
+
+}
+
+
+// ========================================
+// LAYOUT
+// ========================================
+
+function setLayout(number) {
+
+    currentLayout = number;
+
+    const grid =
+        document.getElementById(
+            "cameraGrid"
+        );
+
+
+    let columns = 4;
+
+
+    if (number === 4) {
+
+        columns = 2;
+
+    }
+
+    else if (number === 9) {
+
+        columns = 3;
+
+    }
+
+    else if (number === 16) {
+
+        columns = 4;
+
+    }
+
+
+    grid.style.gridTemplateColumns =
+        `repeat(${columns}, 1fr)`;
+
+
+    renderCameras();
+
+}
+
+
+// ========================================
+// ADD DEVICE MODAL
+// ========================================
+
+function openAddDevice() {
+
+    document
+        .getElementById(
+            "addDeviceModal"
+        )
+        .classList
+        .remove("hidden");
+
+}
+
+
+function closeAddDevice() {
+
+    document
+        .getElementById(
+            "addDeviceModal"
+        )
+        .classList
+        .add("hidden");
+
+}
+
+
+// ========================================
+// SAVE DEVICE
+// ========================================
+
+async function saveDevice() {
+
+    const device = {
+
+        name:
+            document
+                .getElementById(
+                    "deviceName"
+                )
+                .value
+                .trim(),
+
+        brand:
+            document
+                .getElementById(
+                    "deviceBrand"
+                )
+                .value,
+
+        type:
+            document
+                .getElementById(
+                    "deviceType"
+                )
+                .value,
+
+        ip:
+            document
+                .getElementById(
+                    "deviceIP"
+                )
+                .value
+                .trim(),
+
+        port:
+            document
+                .getElementById(
+                    "devicePort"
+                )
+                .value
+                .trim(),
+
+        username:
+            document
+                .getElementById(
+                    "deviceUsername"
+                )
+                .value,
+
+        password:
+            document
+                .getElementById(
+                    "devicePassword"
+                )
+                .value,
+
+        channels:
+            Number(
+                document
+                    .getElementById(
+                        "deviceChannels"
+                    )
+                    .value
+            )
+
+    };
+
+
+    if (!device.name) {
+
+        alert(
+            "Device name required"
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/devices",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify(device)
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (!result.success) {
+
+            alert(
+                result.error ||
+                "Failed to add device"
+            );
+
+            return;
+
+        }
+
+
+        closeAddDevice();
+
+        document
+            .getElementById(
+                "deviceName"
+            )
+            .value = "";
+
+        document
+            .getElementById(
+                "deviceIP"
+            )
+            .value = "";
+
+        document
+            .getElementById(
+                "devicePassword"
+            )
+            .value = "";
+
+
+        await loadDevices();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Server connection failed"
+        );
+
+    }
+
+}
+
+
+// ========================================
+// HTML ESCAPE
+// ========================================
+
+function escapeHtml(value) {
+
+    return String(value)
+
+        .replaceAll("&", "&amp;")
+
+        .replaceAll("<", "&lt;")
+
+        .replaceAll(">", "&gt;")
+
+        .replaceAll('"', "&quot;")
+
+        .replaceAll("'", "&#039;");
+
+}
+
+
+// ========================================
+// START
+// ========================================
+
+loadDevices();
