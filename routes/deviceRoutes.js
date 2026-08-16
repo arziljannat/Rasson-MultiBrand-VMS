@@ -1,9 +1,13 @@
+
 const express = require("express");
 
 const router = express.Router();
 
 const deviceService =
     require("../services/deviceService");
+
+const tvtService =
+    require("../services/tvtService");
 
 
 // GET ALL DEVICES
@@ -60,6 +64,47 @@ router.get("/:id", (req, res) => {
         res.status(500).json({
             success: false,
             error: "Failed to load device"
+        });
+
+    }
+
+});
+
+
+// TEST TVT DEVICE CONNECTION
+
+router.post("/:id/test", async (req, res) => {
+
+    try {
+
+        const device =
+            deviceService.getDeviceById(
+                req.params.id
+            );
+
+        if (!device) {
+
+            return res.status(404).json({
+                success: false,
+                error: "Device not found"
+            });
+
+        }
+
+        const result =
+            await tvtService.testDevice(
+                device
+            );
+
+        res.json(result);
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            success: false,
+            error: "Failed to test TVT device"
         });
 
     }
