@@ -1,142 +1,80 @@
 const express = require("express");
 const path = require("path");
-const fs = require("fs");
+
+const deviceRoutes = require("./routes/deviceRoutes");
+const streamRoutes = require("./routes/streamRoutes");
 
 const app = express();
 
-const PORT = 5000;
+const PORT = process.env.PORT || 3000;
 
-const DEVICES_FILE = path.join(
-    __dirname,
-    "config",
-    "devices.json"
-);
 
-// Middleware
+// --------------------------------------------------
+// MIDDLEWARE
+// --------------------------------------------------
+
 app.use(express.json());
 
-app.use(express.static(
-    path.join(__dirname, "public")
-));
+app.use(express.urlencoded({
+    extended: true
+}));
 
 
-// ========================================
-// LOAD DEVICES
-// ========================================
+// --------------------------------------------------
+// STATIC FRONTEND
+// --------------------------------------------------
 
-function loadDevices() {
-
-    try {
-
-        const data = fs.readFileSync(
-            DEVICES_FILE,
-            "utf8"
-        );
-
-        return JSON.parse(data);
-
-    } catch (error) {
-
-        console.error(
-            "Could not load devices:",
-            error
-        );
-
-        return {
-            devices: []
-        };
-    }
-}
+app.use(
+    express.static(
+        path.join(__dirname, "public")
+    )
+);
 
 
-// ========================================
-// SAVE DEVICES
-// ========================================
+// --------------------------------------------------
+// API ROUTES
+// --------------------------------------------------
 
-function saveDevices(data) {
+app.use(
+    "/api/devices",
+    deviceRoutes
+);
 
-    fs.writeFileSync(
-        DEVICES_FILE,
-        JSON.stringify(data, null, 2),
-        "utf8"
-    );
-}
-
-
-// ========================================
-// API - GET DEVICES
-// ========================================
-
-app.get("/api/devices", (req, res) => {
-
-    const data = loadDevices();
-
-    res.json(data.devices);
-
-});
+app.use(
+    "/api/streams",
+    streamRoutes
+);
 
 
-// ========================================
-// API - ADD DEVICE
-// ========================================
+// --------------------------------------------------
+// HEALTH CHECK
+// --------------------------------------------------
 
-app.post("/api/devices", (req, res) => {
-
-    const device = req.body;
-
-    if (!device.name) {
-
-        return res.status(400).json({
-            error: "Device name is required"
-        });
-
-    }
-
-    const data = loadDevices();
-
-    device.id =
-        Date.now().toString();
-
-    data.devices.push(device);
-
-    saveDevices(data);
+app.get("/api/health", (req, res) => {
 
     res.json({
+
         success: true,
-        device
+
+        name:
+            "Rasson MultiBrand VMS",
+
+        status:
+            "online",
+
+        time:
+            new Date().toISOString()
+
     });
 
 });
 
 
-// ========================================
-// API - DELETE DEVICE
-// ========================================
+// --------------------------------------------------
+// FRONTEND FALLBACK
+// --------------------------------------------------
 
-app.delete("/api/devices/:id", (req, res) => {
-
-    const data = loadDevices();
-
-    data.devices =
-        data.devices.filter(
-            device =>
-                device.id !== req.params.id
-        );
-
-    saveDevices(data);
-
-    res.json({
-        success: true
-    });
-
-});
-
-
-// ========================================
-// ROOT
-// ========================================
-
-app.get("/", (req, res) => {
+app.get("*", (req, res) => {
 
     res.sendFile(
         path.join(
@@ -149,20 +87,44 @@ app.get("/", (req, res) => {
 });
 
 
-// ========================================
-// START SERVER
-// ========================================
+// --------------------------------------------------
+// ERROR HANDLER
+// --------------------------------------------------
 
-app.listen(PORT, () => {
+app.use((err, req, res, next) => {
 
-    console.log("");
-    console.log("================================");
-    console.log(" RASSON MULTI-BRAND VMS");
-    console.log("================================");
-    console.log("");
-    console.log(
-        `Server running: http://localhost:${PORT}`
+    console.error(
+        "Server Error:",
+        err
     );
-    console.log("");
+
+    res.status(500).json({
+
+        success: false,
+
+        error:
+            "Internal server error"
+
+    });
 
 });
+
+
+// --------------------------------------------------
+// START SERVER
+// --------------------------------------------------
+
+app.listen(
+    PORT,
+    () => {
+
+        console.log(
+            `Rasson MultiBrand VMS running on port ${PORT}`
+        );
+
+        console.log(
+            `http://localhost:${PORT}`
+        );
+
+    }
+);
