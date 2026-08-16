@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const { spawn } = require("child_process");
+const net = require("net");
 
 const configPath = path.join(__dirname, "config.json");
 
@@ -15,11 +15,11 @@ const config = JSON.parse(
 
 console.log("");
 console.log("======================================");
-console.log(" RASSON MULTIBRAND VMS - BRIDGE");
+console.log(" RASSON MULTIBRAND VMS - DVR BRIDGE");
 console.log("======================================");
 console.log("");
 
-console.log("Bridge Name:", config.bridgeName);
+console.log("Bridge:", config.bridgeName);
 console.log("Central Server:", config.centralServer);
 console.log("");
 
@@ -28,74 +28,73 @@ if (!config.devices || config.devices.length === 0) {
     process.exit(0);
 }
 
-console.log("Configured DVRs:", config.devices.length);
-console.log("");
+function testPort(device) {
 
-config.devices.forEach((device, index) => {
+    return new Promise((resolve) => {
 
-    console.log(
-        `${index + 1}. ${device.name} | ${device.brand} | ${device.host}:${device.port}`
-    );
+        console.log("--------------------------------------");
+        console.log("Testing:", device.name);
+        console.log("Brand:", device.brand);
+        console.log("IP:", device.host);
+        console.log("RTSP Port:", device.port);
+        console.log("");
 
-});
+        const socket = new net.Socket();
 
-console.log("");
-console.log("Bridge configuration loaded successfully.");
-console.log("");
+        socket.setTimeout(5000);
 
+        socket.connect(device.port, device.host, () => {
 
-// --------------------------------------------------
-// DVR RTSP URL
-// --------------------------------------------------
+            console.log("SUCCESS: DVR RTSP port is reachable.");
+            console.log("");
 
-function createRtspUrl(device) {
+            socket.destroy();
+            resolve(true);
 
-    return `rtsp://${encodeURIComponent(device.username)}:${encodeURIComponent(device.password)}@${device.host}:${device.port}/Streaming/Channels/101`;
+        });
+
+        socket.on("timeout", () => {
+
+            console.log("FAILED: Connection timed out.");
+            console.log("");
+
+            socket.destroy();
+            resolve(false);
+
+        });
+
+        socket.on("error", (error) => {
+
+            console.log("FAILED:", error.message);
+            console.log("");
+
+            socket.destroy();
+            resolve(false);
+
+        });
+
+    });
 }
 
+async function start() {
 
-// --------------------------------------------------
-// Test DVR connection
-// --------------------------------------------------
+    console.log(
+        "Configured DVRs:",
+        config.devices.length
+    );
 
-function testDevice(device) {
+    console.log("");
+
+    for (const device of config.devices) {
+
+        await testPort(device);
+
+    }
 
     console.log("--------------------------------------");
-    console.log("Testing DVR:");
-    console.log(device.name);
-    console.log("IP:", device.host);
-    console.log("Port:", device.port);
+    console.log("DVR network test completed.");
     console.log("");
-
-    const rtspUrl = createRtspUrl(device);
-
-    console.log("RTSP URL:");
-    console.log(
-        `rtsp://${device.username}:********@${device.host}:${device.port}/Streaming/Channels/101`
-    );
-
-    console.log("");
-
-    return rtspUrl;
-}
-
-
-// --------------------------------------------------
-// Start
-// --------------------------------------------------
-
-for (const device of config.devices) {
-
-    testDevice(device);
 
 }
 
-console.log("--------------------------------------");
-console.log("Bridge is ready.");
-console.log("");
-console.log("Next stage:");
-console.log("1. Test DVR RTSP");
-console.log("2. Start FFmpeg");
-console.log("3. Generate HLS");
-console.log("4. Connect stream to central VMS");
-console.log("");
+start();
