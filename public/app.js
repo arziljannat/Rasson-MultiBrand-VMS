@@ -213,6 +213,204 @@ function closeAddDevice() {
 
 
 // ========================================
+// TEST DEVICE CONNECTION
+// ========================================
+
+async function testDeviceConnection() {
+
+    const device = {
+
+        name:
+            document
+                .getElementById("deviceName")
+                .value
+                .trim(),
+
+        brand:
+            document
+                .getElementById("deviceBrand")
+                .value,
+
+        type:
+            document
+                .getElementById("deviceType")
+                .value,
+
+        connectionType:
+            document
+                .getElementById("connectionType")
+                .value,
+
+        serial:
+            document
+                .getElementById("deviceSerial")
+                .value
+                .trim(),
+
+        ip:
+            document
+                .getElementById("deviceIP")
+                .value
+                .trim(),
+
+        port:
+            document
+                .getElementById("devicePort")
+                .value
+                .trim(),
+
+        username:
+            document
+                .getElementById("deviceUsername")
+                .value,
+
+        password:
+            document
+                .getElementById("devicePassword")
+                .value,
+
+        channels:
+            Number(
+                document
+                    .getElementById("deviceChannels")
+                    .value
+            )
+
+    };
+
+
+    if (!device.name) {
+
+        alert("Device name required");
+
+        return;
+
+    }
+
+
+    if (
+        !device.serial &&
+        !device.ip
+    ) {
+
+        alert(
+            "Enter Serial Number / Device ID or IP Address"
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        /*
+         * For testing a device before saving,
+         * we first save it temporarily through
+         * the existing API.
+         */
+
+        const addResponse =
+            await fetch(
+                "/api/devices",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify(device)
+                }
+            );
+
+
+        const addResult =
+            await addResponse.json();
+
+
+        if (
+            !addResult.success ||
+            !addResult.device
+        ) {
+
+            alert(
+                addResult.error ||
+                "Unable to create test device"
+            );
+
+            return;
+
+        }
+
+
+        const deviceId =
+            addResult.device.id;
+
+
+        const testResponse =
+            await fetch(
+                `/api/devices/${deviceId}/test`,
+                {
+                    method: "POST"
+                }
+            );
+
+
+        const result =
+            await testResponse.json();
+
+
+        if (result.status === "NAT2_READY") {
+
+            alert(
+                "NAT2.0 device configuration is valid.\n\n" +
+                "Actual P2P video connection will be added in the next stage."
+            );
+
+            return;
+
+        }
+
+
+        if (result.success) {
+
+            alert(
+                result.message ||
+                "Connection successful"
+            );
+
+            return;
+
+        }
+
+
+        alert(
+            result.message ||
+            result.error ||
+            "Connection failed"
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Test connection error:",
+            error
+        );
+
+        alert(
+            "Server connection failed"
+        );
+
+    }
+
+}
+
+
+// ========================================
 // SAVE DEVICE
 // ========================================
 
