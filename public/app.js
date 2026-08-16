@@ -242,6 +242,21 @@ async function saveDevice() {
                 )
                 .value,
 
+        connectionType:
+            document
+                .getElementById(
+                    "connectionType"
+                )
+                .value,
+
+        serial:
+            document
+                .getElementById(
+                    "deviceSerial"
+                )
+                .value
+                .trim(),
+
         ip:
             document
                 .getElementById(
@@ -332,9 +347,18 @@ async function saveDevice() {
 
         closeAddDevice();
 
+
+        // Clear form
+
         document
             .getElementById(
                 "deviceName"
+            )
+            .value = "";
+
+        document
+            .getElementById(
+                "deviceSerial"
             )
             .value = "";
 
@@ -346,7 +370,25 @@ async function saveDevice() {
 
         document
             .getElementById(
+                "devicePort"
+            )
+            .value = "";
+
+        document
+            .getElementById(
+                "deviceUsername"
+            )
+            .value = "";
+
+        document
+            .getElementById(
                 "devicePassword"
+            )
+            .value = "";
+
+        document
+            .getElementById(
+                "deviceChannels"
             )
             .value = "";
 
@@ -375,15 +417,30 @@ function escapeHtml(value) {
 
     return String(value)
 
-        .replaceAll("&", "&amp;")
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
 
-        .replaceAll("<", "&lt;")
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
 
-        .replaceAll(">", "&gt;")
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
 
-        .replaceAll('"', "&quot;")
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
 
-        .replaceAll("'", "&#039;");
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
 
 }
 
