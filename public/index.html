@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Rasson Multi-Brand VMS
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- ================================= -->
+<!-- TOP BAR -->
+<!-- ================================= -->
+
+<header class="topbar">
+
+    <div class="logo">
+
+        <div class="logo-icon">
+            ◉
+        </div>
+
+        <div>
+
+            <div class="logo-title">
+                RASSON
+            </div>
+
+            <div class="logo-subtitle">
+                MULTI-BRAND VMS
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="top-actions">
+
+        <button
+            onclick="openAddDevice()"
+            class="add-button"
+        >
+            + Add Device
+        </button>
+
+    </div>
+
+</header>
+
+
+
+<!-- ================================= -->
+<!-- MAIN -->
+<!-- ================================= -->
+
+<div class="main-container">
+
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-title">
+            DEVICES
+        </div>
+
+        <div
+            id="deviceList"
+            class="device-list"
+        >
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- CONTENT -->
+
+    <main class="content">
+
+
+        <div class="content-header">
+
+            <div>
+
+                <h1>
+                    Live View
+                </h1>
+
+                <span
+                    id="deviceCount"
+                    class="device-count"
+                >
+                    0 Devices
+                </span>
+
+            </div>
+
+
+            <div class="layout-buttons">
+
+                <button
+                    onclick="setLayout(4)"
+                >
+                    2×2
+                </button>
+
+                <button
+                    onclick="setLayout(9)"
+                >
+                    3×3
+                </button>
+
+                <button
+                    onclick="setLayout(16)"
+                >
+                    4×4
+                </button>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- CAMERA GRID -->
+
+        <div
+            id="cameraGrid"
+            class="camera-grid"
+        >
+
+        </div>
+
+
+    </main>
+
+</div>
+
+
+
+<!-- ================================= -->
+<!-- ADD DEVICE MODAL -->
+<!-- ================================= -->
+
+<div
+    id="addDeviceModal"
+    class="modal hidden"
+>
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <h2>
+                Add DVR / NVR
+            </h2>
+
+            <button
+                onclick="closeAddDevice()"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <label>
+            Device Name
+        </label>
+
+        <input
+            id="deviceName"
+            placeholder="Rasson 1"
+        >
+
+
+        <label>
+            Brand
+        </label>
+
+        <select id="deviceBrand">
+
+            <option value="xiongmai">
+                Xiongmai / XM
+            </option>
+
+            <option value="hikvision">
+                Hikvision
+            </option>
+
+            <option value="tvt">
+                TVT
+            </option>
+
+            <option value="dahua">
+                Dahua
+            </option>
+
+            <option value="generic">
+                Generic RTSP / ONVIF
+            </option>
+
+        </select>
+
+
+        <label>
+            Device Type
+        </label>
+
+        <select id="deviceType">
+
+            <option value="dvr">
+                DVR
+            </option>
+
+            <option value="nvr">
+                NVR
+            </option>
+
+        </select>
+
+
+        <label>
+            IP Address
+        </label>
+
+        <input
+            id="deviceIP"
+            placeholder="192.168.1.100"
+        >
+
+
+        <label>
+            Port
+        </label>
+
+        <input
+            id="devicePort"
+            value="554"
+        >
+
+
+        <label>
+            Username
+        </label>
+
+        <input
+            id="deviceUsername"
+            value="admin"
+        >
+
+
+        <label>
+            Password
+        </label>
+
+        <input
+            id="devicePassword"
+            type="password"
+        >
+
+
+        <label>
+            Channels
+        </label>
+
+        <input
+            id="deviceChannels"
+            type="number"
+            value="16"
+            min="1"
+            max="64"
+        >
+
+
+        <div class="modal-actions">
+
+            <button
+                onclick="closeAddDevice()"
+            >
+                Cancel
+            </button>
+
+            <button
+                onclick="saveDevice()"
+                class="save-button"
+            >
+                Save Device
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<script src="app.js"></script>
+
+</body>
+
+</html>
